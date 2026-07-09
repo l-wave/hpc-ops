@@ -5,12 +5,12 @@ The CUDA op is specialized for NeoX-style rotate_half layout with head_dim=128,
 but the test matrix covers a wider set of TTS-like MTP shapes: different batch
 sizes, code-group sequence lengths, attention head counts, and GQA ratios.
 
-Run correctness:
-    pytest tests/test_mtp_rope.py -q
+Run correctness after a minimal/in-place build:
+    HPC_OPS_IMPORT_MODULES=rope pytest tests/test_mtp_rope.py -q
 
 Run the microbenchmark table:
-    python3 tests/test_mtp_rope.py --bench
-    python3 tests/test_mtp_rope.py --bench --shapes qwen3_tts,gqa1,no_gqa --bs 1,8,32
+    HPC_OPS_IMPORT_MODULES=rope python3 tests/test_mtp_rope.py --bench
+    HPC_OPS_IMPORT_MODULES=rope python3 tests/test_mtp_rope.py --bench --shapes qwen3_tts,gqa1,no_gqa --bs 1,8,32
 """
 
 from __future__ import annotations
@@ -24,7 +24,16 @@ from pathlib import Path
 import pytest
 import torch
 
-sys.path.insert(0, os.path.realpath(list(Path(__file__).parent.glob("../build/lib.*/"))[0]))
+
+def _hpc_import_path() -> Path:
+    repo_root = Path(__file__).resolve().parent.parent
+    build_libs = list((repo_root / "build").glob("lib.*/"))
+    if build_libs:
+        return build_libs[0]
+    return repo_root
+
+
+sys.path.insert(0, os.path.realpath(_hpc_import_path()))
 
 import hpc  # noqa: E402
 

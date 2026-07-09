@@ -18,6 +18,12 @@ def _discover_modules() -> Dict[str, ModuleType]:
 
         module_name = file.stem
 
+        selected = os.getenv("HPC_OPS_IMPORT_MODULES")
+        if selected:
+            selected_modules = {x.strip() for x in selected.split(",") if x.strip()}
+            if module_name not in selected_modules:
+                continue
+
         try:
             module = importlib.import_module(f".{module_name}", package=__package__)
             modules[module_name] = module
