@@ -35,6 +35,14 @@ void rope_norm_store_kv_fp8_async(
     int kv_block_size, int num_rows, int num_q_heads, int num_kv_heads, int qk_head_dim,
     int v_head_dim, bool is_prefill, int qk_norm_policy, int quant_policy, cudaStream_t stream);
 
+void qwen3_mtp_rope_async(__nv_bfloat16 *q_out, __nv_bfloat16 *k_out, const __nv_bfloat16 *q,
+                          const __nv_bfloat16 *k, const __nv_bfloat16 *cos,
+                          const __nv_bfloat16 *sin, int batch_size, int seq_len,
+                          int num_q_heads, int num_kv_heads, int head_dim, int64_t q_s0,
+                          int64_t q_s1, int64_t q_s2, int64_t k_s0, int64_t k_s1,
+                          int64_t k_s2, int64_t cos_s0, int64_t cos_s1, int64_t sin_s0,
+                          int64_t sin_s1, cudaStream_t stream);
+
 }  // namespace rope
 }  // namespace hpc
 
